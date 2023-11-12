@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  Clipboard,
 } from "react-native";
 
 const Row = ({ children }: { children: any }) => (
@@ -106,6 +107,15 @@ export default function App() {
     setStoredValue("");
   };
 
+  const handleCopyPress = () => {
+    Clipboard.setString(displayValue);
+  };
+
+  const handlePastePress = async () => {
+    const clipboardContent = await Clipboard.getString();
+    setDisplayValue(clipboardContent);
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -168,6 +178,10 @@ export default function App() {
           />
           <Button value="." onPress={handleDecimalPress} />
           <Button value="=" style="accent" onPress={handleEqualsPress} />
+        </Row>
+        <Row>
+          <Button value="Paste" onPress={handlePastePress} />
+          <Button value="Copy Result" onPress={handleCopyPress} />
         </Row>
       </SafeAreaView>
     </View>
