@@ -217,7 +217,17 @@ export default function App() {
   const handleEPress = () => {
     setDisplayValue(Math.E.toString());
   };
+  const handleRadPress = () => {
+    const currentValue = parseFloat(displayValue);
+    const result = currentValue * (Math.PI / 180); // Convert degrees to radians
+    setDisplayValue(result.toString());
+  };
 
+  const handleSquareRootPress = () => {
+    const currentValue = parseFloat(displayValue);
+    const result = Math.sqrt(currentValue);
+    setDisplayValue(result.toString());
+  };
   const isLandScape = mode !== ScreenOrientation.Orientation.PORTRAIT_UP;
 
   return (
@@ -234,6 +244,12 @@ export default function App() {
         <Text style={styles.computedValue}>{displayValue}</Text>
 
         <Row>
+          {isLandScape && (
+            <>
+              <Button mode={mode} value="rad" onPress={handleRadPress} />
+              <Button mode={mode} value="√" onPress={handleSquareRootPress} />
+            </>
+          )}
           <Button
             mode={mode}
             value="C"
