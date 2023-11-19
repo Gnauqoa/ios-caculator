@@ -66,6 +66,7 @@ const Button = ({ value, style, onPress, mode }: IButton) => {
 };
 
 export default function App() {
+  const [sup, setSup] = useState(false);
   const [displayValue, setDisplayValue] = useState("0");
   const [operator, setOperator] = useState("");
   const [storedValue, setStoredValue] = useState("");
@@ -119,6 +120,7 @@ export default function App() {
         break;
       case "/":
         result = storedValueFloat / currentValue;
+        if (storedValueFloat === 20 && currentValue === 11) setSup(true);
         break;
       default:
         break;
@@ -264,6 +266,23 @@ export default function App() {
         <StatusBar style="light" />
         <SafeAreaView style={{ width: "100%" }}>
           <Text style={styles.computedValue}>{displayValue}</Text>
+          <Modal onClose={() => setSup(false)} isOpen={sup}>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "60%",
+                backgroundColor: "#fff",
+                height: "60%",
+                padding: 12,
+              }}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                Chúc thầy 20/11 vui vẻ, nhiều sức khỏe, thành công trong sự
+                nghiệp giáo dục và hạnh phúc bên gia đình
+              </Text>
+            </View>
+          </Modal>
           <Modal onClose={() => setShowHistory(false)} isOpen={showHistory}>
             <View
               style={{
