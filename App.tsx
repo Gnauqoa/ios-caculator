@@ -204,6 +204,19 @@ export default function App() {
     const result = Math.pow(currentValue, parseFloat(storedValue));
     setDisplayValue(result.toString());
   };
+  const handleAbsolutePress = () => {
+    const currentValue = parseFloat(displayValue);
+    const result = Math.abs(currentValue);
+    setDisplayValue(result.toString());
+  };
+
+  const handlePiPress = () => {
+    setDisplayValue(Math.PI.toString());
+  };
+
+  const handleEPress = () => {
+    setDisplayValue(Math.E.toString());
+  };
 
   const isLandScape = mode !== ScreenOrientation.Orientation.PORTRAIT_UP;
 
@@ -353,10 +366,21 @@ export default function App() {
           />
         </Row>
         <Row>
+          {isLandScape && (
+            <>
+              <Button mode={mode} value="π" onPress={handlePiPress} />
+              <Button mode={mode} value="e" onPress={handleEPress} />
+              <Button mode={mode} value="|x|" onPress={handleAbsolutePress} />
+              <Button
+                mode={mode}
+                value="+/-"
+                onPress={() => handleOperatorPress("+/-")}
+              />
+            </>
+          )}
           <Button
             mode={mode}
             value="0"
-            style="double"
             onPress={() => handleNumberPress("0")}
           />
           <Button mode={mode} value="." onPress={handleDecimalPress} />
