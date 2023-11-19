@@ -1,7 +1,7 @@
+import { NativeBaseProvider } from "native-base";
 import * as ScreenOrientation from "expo-screen-orientation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Modal } from "react-native";
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {
   Clipboard,
   useWindowDimensions,
 } from "react-native";
+import { Modal } from "native-base";
 
 type HistoryRecord = {
   expression: string;
@@ -70,7 +71,7 @@ export default function App() {
   const [storedValue, setStoredValue] = useState("");
   const [mode, setMode] = useState(1);
   const [history, setHistory] = useState<HistoryRecord[]>([]); // State variable to store the history
-
+  const [showHistory, setShowHistory] = useState(false); // State variable to control the visibility of the history modal
   const handleNumberPress = (value: string) => {
     if (displayValue === "0") {
       setDisplayValue(value);
@@ -251,24 +252,43 @@ export default function App() {
   const isLandScape = mode !== ScreenOrientation.Orientation.PORTRAIT_UP;
 
   return (
-    <View
-      style={[
-        styles.container,
-        mode !== ScreenOrientation.Orientation.PORTRAIT_UP
-          ? styles.containerLandscape
-          : null,
-      ]}
-    >
-      <StatusBar style="light" />
-      <SafeAreaView style={{ width: "100%" }}>
-        <Text style={styles.computedValue}>{displayValue}</Text>
-
-        <Row>
-          {isLandScape && (
-            <>
-              <Button mode={mode} value="rad" onPress={handleRadPress} />
-              <Button mode={mode} value="√" onPress={handleSquareRootPress} />
-              {/* 
+    <NativeBaseProvider>
+      <View
+        style={[
+          styles.container,
+          mode !== ScreenOrientation.Orientation.PORTRAIT_UP
+            ? styles.containerLandscape
+            : null,
+        ]}
+      >
+        <StatusBar style="light" />
+        <SafeAreaView style={{ width: "100%" }}>
+          <Text style={styles.computedValue}>{displayValue}</Text>
+          <Modal onClose={() => setShowHistory(false)} isOpen={showHistory}>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "60%",
+                backgroundColor: "#fff",
+                height: "60%",
+                padding: 12,
+              }}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>History</Text>
+              {history.map((record, index) => (
+                <Text key={index}>
+                  {record.expression} = {record.result}
+                </Text>
+              ))}
+            </View>
+          </Modal>
+          <Row>
+            {isLandScape && (
+              <>
+                <Button mode={mode} value="rad" onPress={handleRadPress} />
+                <Button mode={mode} value="√" onPress={handleSquareRootPress} />
+                {/* 
               <Button
                 mode={mode}
                 value="("
@@ -279,183 +299,188 @@ export default function App() {
                 value=")"
                 onPress={handleRightParenthesisPress}
               /> */}
-            </>
-          )}
-          <Button
-            mode={mode}
-            value="C"
-            style="secondary"
-            onPress={handleClearPress}
-          />
-          <Button
-            mode={mode}
-            value="+/-"
-            style="secondary"
-            onPress={() => handleOperatorPress("+/-")}
-          />
-          <Button
-            mode={mode}
-            value="%"
-            style="secondary"
-            onPress={() => handleOperatorPress("%")}
-          />
-          <Button
-            mode={mode}
-            value="/"
-            style="accent"
-            onPress={() => handleOperatorPress("/")}
-          />
-        </Row>
-        <Row>
-          {isLandScape && (
-            <>
-              <Button
-                mode={mode}
-                value="sin"
-                onPress={() => handleTrigPress("sin")}
-              />
-              <Button
-                mode={mode}
-                value="cos"
-                onPress={() => handleTrigPress("cos")}
-              />
-              <Button
-                mode={mode}
-                value="tan"
-                onPress={() => handleTrigPress("tan")}
-              />
-            </>
-          )}
-          <Button
-            mode={mode}
-            value="7"
-            onPress={() => handleNumberPress("7")}
-          />
-          <Button
-            mode={mode}
-            value="8"
-            onPress={() => handleNumberPress("8")}
-          />
-          <Button
-            mode={mode}
-            value="9"
-            onPress={() => handleNumberPress("9")}
-          />
-          <Button
-            mode={mode}
-            value="x"
-            style="accent"
-            onPress={() => handleOperatorPress("x")}
-          />
-        </Row>
-        <Row>
-          {isLandScape && (
-            <>
-              <Button mode={mode} value="1/x" onPress={handleInversePress} />
-              <Button mode={mode} value="log" onPress={handleLogPress} />
-              <Button mode={mode} value="ln" onPress={handleLnPress} />
-            </>
-          )}
-          <Button
-            mode={mode}
-            value="4"
-            onPress={() => handleNumberPress("4")}
-          />
-          <Button
-            mode={mode}
-            value="5"
-            onPress={() => handleNumberPress("5")}
-          />
-          <Button
-            mode={mode}
-            value="6"
-            onPress={() => handleNumberPress("6")}
-          />
-          <Button
-            mode={mode}
-            value="-"
-            style="accent"
-            onPress={() => handleOperatorPress("-")}
-          />
-        </Row>
-        <Row>
-          {isLandScape && (
-            <>
-              <Button
-                mode={mode}
-                value="e^x"
-                onPress={handleExponentialPress}
-              />
-              <Button mode={mode} value="x^2" onPress={handleSquarePress} />
-              <Button mode={mode} value="x^y" onPress={handlePowerPress} />
-            </>
-          )}
-          <Button
-            mode={mode}
-            value="1"
-            onPress={() => handleNumberPress("1")}
-          />
-          <Button
-            mode={mode}
-            value="2"
-            onPress={() => handleNumberPress("2")}
-          />
-          <Button
-            mode={mode}
-            value="3"
-            onPress={() => handleNumberPress("3")}
-          />
-          <Button
-            mode={mode}
-            value="+"
-            style="accent"
-            onPress={() => handleOperatorPress("+")}
-          />
-        </Row>
-        <Row>
-          {isLandScape && (
-            <>
-              <Button mode={mode} value="π" onPress={handlePiPress} />
-              <Button mode={mode} value="e" onPress={handleEPress} />
-              <Button mode={mode} value="|x|" onPress={handleAbsolutePress} />
-              <Button
-                mode={mode}
-                value="+/-"
-                onPress={() => handleOperatorPress("+/-")}
-              />
-            </>
-          )}
-          <Button
-            mode={mode}
-            value="0"
-            onPress={() => handleNumberPress("0")}
-          />
-          <Button mode={mode} value="." onPress={handleDecimalPress} />
-          <Button
-            mode={mode}
-            value="="
-            style="accent"
-            onPress={handleEqualsPress}
-          />
-        </Row>
-        <Row>
-          <Button mode={mode} value="Paste" onPress={handlePastePress} />
-          <Button mode={mode} value="Copy Result" onPress={handleCopyPress} />
-        </Row>
-        <Row>
-          {/* <Button mode={mode} value={"History"} /> */}
-          <Button
-            mode={mode}
-            value={
-              mode === ScreenOrientation.Orientation.PORTRAIT_UP
-                ? "Portrait"
-                : "Landscape"
-            }
-            onPress={handleLandscapeMode}
-          />
-        </Row>
-      </SafeAreaView>
-    </View>
+              </>
+            )}
+            <Button
+              mode={mode}
+              value="C"
+              style="secondary"
+              onPress={handleClearPress}
+            />
+            <Button
+              mode={mode}
+              value="+/-"
+              style="secondary"
+              onPress={() => handleOperatorPress("+/-")}
+            />
+            <Button
+              mode={mode}
+              value="%"
+              style="secondary"
+              onPress={() => handleOperatorPress("%")}
+            />
+            <Button
+              mode={mode}
+              value="/"
+              style="accent"
+              onPress={() => handleOperatorPress("/")}
+            />
+          </Row>
+          <Row>
+            {isLandScape && (
+              <>
+                <Button
+                  mode={mode}
+                  value="sin"
+                  onPress={() => handleTrigPress("sin")}
+                />
+                <Button
+                  mode={mode}
+                  value="cos"
+                  onPress={() => handleTrigPress("cos")}
+                />
+                <Button
+                  mode={mode}
+                  value="tan"
+                  onPress={() => handleTrigPress("tan")}
+                />
+              </>
+            )}
+            <Button
+              mode={mode}
+              value="7"
+              onPress={() => handleNumberPress("7")}
+            />
+            <Button
+              mode={mode}
+              value="8"
+              onPress={() => handleNumberPress("8")}
+            />
+            <Button
+              mode={mode}
+              value="9"
+              onPress={() => handleNumberPress("9")}
+            />
+            <Button
+              mode={mode}
+              value="x"
+              style="accent"
+              onPress={() => handleOperatorPress("x")}
+            />
+          </Row>
+          <Row>
+            {isLandScape && (
+              <>
+                <Button mode={mode} value="1/x" onPress={handleInversePress} />
+                <Button mode={mode} value="log" onPress={handleLogPress} />
+                <Button mode={mode} value="ln" onPress={handleLnPress} />
+              </>
+            )}
+            <Button
+              mode={mode}
+              value="4"
+              onPress={() => handleNumberPress("4")}
+            />
+            <Button
+              mode={mode}
+              value="5"
+              onPress={() => handleNumberPress("5")}
+            />
+            <Button
+              mode={mode}
+              value="6"
+              onPress={() => handleNumberPress("6")}
+            />
+            <Button
+              mode={mode}
+              value="-"
+              style="accent"
+              onPress={() => handleOperatorPress("-")}
+            />
+          </Row>
+          <Row>
+            {isLandScape && (
+              <>
+                <Button
+                  mode={mode}
+                  value="e^x"
+                  onPress={handleExponentialPress}
+                />
+                <Button mode={mode} value="x^2" onPress={handleSquarePress} />
+                <Button mode={mode} value="x^y" onPress={handlePowerPress} />
+              </>
+            )}
+            <Button
+              mode={mode}
+              value="1"
+              onPress={() => handleNumberPress("1")}
+            />
+            <Button
+              mode={mode}
+              value="2"
+              onPress={() => handleNumberPress("2")}
+            />
+            <Button
+              mode={mode}
+              value="3"
+              onPress={() => handleNumberPress("3")}
+            />
+            <Button
+              mode={mode}
+              value="+"
+              style="accent"
+              onPress={() => handleOperatorPress("+")}
+            />
+          </Row>
+          <Row>
+            {isLandScape && (
+              <>
+                <Button mode={mode} value="π" onPress={handlePiPress} />
+                <Button mode={mode} value="e" onPress={handleEPress} />
+                <Button mode={mode} value="|x|" onPress={handleAbsolutePress} />
+                <Button
+                  mode={mode}
+                  value="+/-"
+                  onPress={() => handleOperatorPress("+/-")}
+                />
+              </>
+            )}
+            <Button
+              mode={mode}
+              value="0"
+              onPress={() => handleNumberPress("0")}
+            />
+            <Button mode={mode} value="." onPress={handleDecimalPress} />
+            <Button
+              mode={mode}
+              value="="
+              style="accent"
+              onPress={handleEqualsPress}
+            />
+          </Row>
+          <Row>
+            <Button mode={mode} value="Paste" onPress={handlePastePress} />
+            <Button mode={mode} value="Copy Result" onPress={handleCopyPress} />
+          </Row>
+          <Row>
+            <Button
+              mode={mode}
+              value={"History"}
+              onPress={() => setShowHistory(true)}
+            />
+            <Button
+              mode={mode}
+              value={
+                mode === ScreenOrientation.Orientation.PORTRAIT_UP
+                  ? "Portrait"
+                  : "Landscape"
+              }
+              onPress={handleLandscapeMode}
+            />
+          </Row>
+        </SafeAreaView>
+      </View>
+    </NativeBaseProvider>
   );
 }
 
