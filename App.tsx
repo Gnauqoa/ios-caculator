@@ -292,6 +292,7 @@ export default function App() {
                 backgroundColor: "#fff",
                 height: "60%",
                 padding: 12,
+                overflow: "scroll",
               }}
             >
               <Text style={{ fontSize: 20, fontWeight: "bold" }}>History</Text>
