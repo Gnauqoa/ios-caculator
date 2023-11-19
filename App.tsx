@@ -187,6 +187,24 @@ export default function App() {
     setDisplayValue(result.toString());
   };
 
+  const handleExponentialPress = () => {
+    const currentValue = parseFloat(displayValue);
+    const result = Math.exp(currentValue);
+    setDisplayValue(result.toString());
+  };
+
+  const handleSquarePress = () => {
+    const currentValue = parseFloat(displayValue);
+    const result = Math.pow(currentValue, 2);
+    setDisplayValue(result.toString());
+  };
+
+  const handlePowerPress = () => {
+    const currentValue = parseFloat(displayValue);
+    const result = Math.pow(currentValue, parseFloat(storedValue));
+    setDisplayValue(result.toString());
+  };
+
   const isLandScape = mode !== ScreenOrientation.Orientation.PORTRAIT_UP;
 
   return (
@@ -301,6 +319,17 @@ export default function App() {
           />
         </Row>
         <Row>
+          {isLandScape && (
+            <>
+              <Button
+                mode={mode}
+                value="e^x"
+                onPress={handleExponentialPress}
+              />
+              <Button mode={mode} value="x^2" onPress={handleSquarePress} />
+              <Button mode={mode} value="x^y" onPress={handlePowerPress} />
+            </>
+          )}
           <Button
             mode={mode}
             value="1"
