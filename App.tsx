@@ -1,16 +1,21 @@
 import * as ScreenOrientation from "expo-screen-orientation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
+import { Modal } from "react-native";
 import {
   StyleSheet,
   View,
   SafeAreaView,
   Text,
   TouchableOpacity,
-  Dimensions,
   Clipboard,
   useWindowDimensions,
 } from "react-native";
+
+type HistoryRecord = {
+  expression: string;
+  result: string;
+};
 
 const Row = ({ children }: { children: any }) => (
   <View style={styles.row}>{children}</View>
@@ -64,6 +69,7 @@ export default function App() {
   const [operator, setOperator] = useState("");
   const [storedValue, setStoredValue] = useState("");
   const [mode, setMode] = useState(1);
+  const [history, setHistory] = useState<HistoryRecord[]>([]); // State variable to store the history
 
   const handleNumberPress = (value: string) => {
     if (displayValue === "0") {
@@ -119,6 +125,12 @@ export default function App() {
     setDisplayValue(result.toString());
     setOperator("");
     setStoredValue("");
+    const expression = `${storedValue} ${operator} ${currentValue}`;
+    const historyRecord: HistoryRecord = {
+      expression,
+      result: result.toString(),
+    };
+    setHistory([...history, historyRecord]);
   };
 
   const handleClearPress = () => {
@@ -228,6 +240,14 @@ export default function App() {
     const result = Math.sqrt(currentValue);
     setDisplayValue(result.toString());
   };
+  const handleLeftParenthesisPress = () => {
+    setDisplayValue(displayValue + "(");
+  };
+
+  const handleRightParenthesisPress = () => {
+    setDisplayValue(displayValue + ")");
+  };
+
   const isLandScape = mode !== ScreenOrientation.Orientation.PORTRAIT_UP;
 
   return (
@@ -248,6 +268,17 @@ export default function App() {
             <>
               <Button mode={mode} value="rad" onPress={handleRadPress} />
               <Button mode={mode} value="√" onPress={handleSquareRootPress} />
+              {/* 
+              <Button
+                mode={mode}
+                value="("
+                onPress={handleLeftParenthesisPress}
+              />
+              <Button
+                mode={mode}
+                value=")"
+                onPress={handleRightParenthesisPress}
+              /> */}
             </>
           )}
           <Button
@@ -412,6 +443,7 @@ export default function App() {
           <Button mode={mode} value="Copy Result" onPress={handleCopyPress} />
         </Row>
         <Row>
+          {/* <Button mode={mode} value={"History"} /> */}
           <Button
             mode={mode}
             value={
