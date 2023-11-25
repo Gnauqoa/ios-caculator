@@ -12,11 +12,10 @@ interface IButton {
   value: string;
   style?: "secondary" | "accent" | "double";
   onPress: () => void;
-  mode: number;
 }
-const Button = ({ value, style, onPress, mode }: IButton) => {
+const Button = ({ value, style, onPress }: IButton) => {
   const { height, width } = useWindowDimensions();
-  const isLandScape = mode !== ScreenOrientation.Orientation.PORTRAIT_UP;
+  const isLandScape = true;
   const buttonWidth = isLandScape
     ? width / 4 - BTN_MARGIN * 2
     : width / 4 - BTN_MARGIN * 2;
@@ -67,6 +66,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#f09a36",
   },
 });
-
 
 export default Button;

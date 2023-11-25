@@ -1,28 +1,47 @@
-const calculate = (expression: string) => {
+function calculate(expression: string): number {
   const isNumber = (s: string) => !isNaN(parseFloat(s)) && isFinite(+s);
 
   const applyOperator = (operators: string[], values: number[]) => {
     const operator = operators.pop();
     const right = values.pop()!;
     const left = values.pop()!;
-    if (operator === "+") {
-      values.push(left + right);
-    } else if (operator === "-") {
-      values.push(left - right);
-    } else if (operator === "x") {
-      values.push(left * right);
-    } else if (operator === "/") {
-      values.push(left / right);
+    switch (operator) {
+      case "+":
+        values.push(left + right);
+        break;
+      case "-":
+        values.push(left - right);
+        break;
+      case "×":
+      case "*":
+        values.push(left * right);
+        break;
+      case "/":
+      case "÷":
+        values.push(left / right);
+        break;
+      case "%":
+        values.push(left % right);
+        break;
+      default:
+        throw new Error(`Unexpected operator: ${operator}`);
     }
   };
 
   const precedence = (op: string) => {
-    if (op === "+" || op === "-") {
-      return 1;
-    } else if (op === "x" || op === "/") {
-      return 2;
+    switch (op) {
+      case "+":
+      case "-":
+        return 1;
+      case "×":
+      case "*":
+      case "÷":
+      case "/":
+      case "%":
+        return 2;
+      default:
+        return 0;
     }
-    return 0;
   };
 
   const evaluate = (tokens: string[]) => {
@@ -43,12 +62,7 @@ const calculate = (expression: string) => {
         }
         values.push(parseFloat(tokens.slice(i, j).join("")));
         i = j;
-      } else if (
-        tokens[i] === "+" ||
-        tokens[i] === "-" ||
-        tokens[i] === "x" ||
-        tokens[i] === "/"
-      ) {
+      } else if (["+", "-", "×", "*", "÷", "/", "%"].includes(tokens[i])) {
         while (
           operators.length > 0 &&
           precedence(operators[operators.length - 1]) >= precedence(tokens[i])
@@ -83,7 +97,7 @@ const calculate = (expression: string) => {
   const tokens: string[] = expression.split("");
   const result = evaluate(tokens);
   return result;
-};
+}
 
 // Example usage:
 export default calculate;
