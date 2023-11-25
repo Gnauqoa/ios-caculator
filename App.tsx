@@ -1,8 +1,8 @@
 import { NativeBaseProvider } from "native-base";
 import * as ScreenOrientation from "expo-screen-orientation";
 import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import {
+  StatusBar,
   StyleSheet,
   View,
   SafeAreaView,
@@ -11,8 +11,9 @@ import {
   TextInput,
   NativeSyntheticEvent,
   TextInputChangeEventData,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import { Modal } from "native-base";
 import Button from "./components/Button";
 import calculate from "./utils/calculate";
 
@@ -47,6 +48,7 @@ export default function App() {
     const clipboardContent = await Clipboard.getString();
     setDisplayValue(clipboardContent);
   };
+
   const handleChange = (
     event: NativeSyntheticEvent<TextInputChangeEventData>
   ) => {
@@ -54,11 +56,11 @@ export default function App() {
     const validInput = input.replace(/[^0-9+\-*/%÷×]/g, "");
     setDisplayValue(validInput);
   };
+
   const handleLandscapeMode = async () => {
     const mode = await ScreenOrientation.getOrientationAsync();
     if (mode === ScreenOrientation.Orientation.PORTRAIT_UP) {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-
       setMode(0);
     } else {
       ScreenOrientation.lockAsync(
@@ -68,33 +70,39 @@ export default function App() {
     }
   };
 
+  const handleScreenPress = () => {
+    Keyboard.dismiss();
+  };
+
   return (
     <NativeBaseProvider>
-      <View
-        style={[
-          styles.container,
-          mode !== ScreenOrientation.Orientation.PORTRAIT_UP
-            ? styles.containerLandscape
-            : null,
-        ]}
-      >
-        <StatusBar style="light" />
-        <SafeAreaView style={{ width: "100%" }}>
-          <TextInput
-            style={styles.computedValue}
-            value={displayValue}
-            onChange={handleChange}
-          />
-          <Row>
-            <Button value="C" onPress={handleClearPress} />
-            <Button value="=" onPress={handleEqualsPress} />
-          </Row>
-          <Row>
-            <Button value="Copy" onPress={handleCopyPress} />
-            <Button value="Paste" onPress={handlePastePress} />
-          </Row>
-        </SafeAreaView>
-      </View>
+      <TouchableWithoutFeedback onPress={handleScreenPress}>
+        <View
+          style={[
+            styles.container,
+            mode !== ScreenOrientation.Orientation.PORTRAIT_UP
+              ? styles.containerLandscape
+              : null,
+          ]}
+        >
+          <StatusBar />
+          <SafeAreaView style={{ width: "100%" }}>
+            <TextInput
+              style={styles.computedValue}
+              value={displayValue}
+              onChange={handleChange}
+            />
+            <Row>
+              <Button value="C" onPress={handleClearPress} />
+              <Button value="=" onPress={handleEqualsPress} />
+            </Row>
+            <Row>
+              <Button value="Copy" onPress={handleCopyPress} />
+              <Button value="Paste" onPress={handlePastePress} />
+            </Row>
+          </SafeAreaView>
+        </View>
+      </TouchableWithoutFeedback>
     </NativeBaseProvider>
   );
 }
@@ -111,13 +119,11 @@ const styles = StyleSheet.create({
   containerLandscape: {
     flexDirection: "row",
   },
-
   computedValue: {
     color: "#fff",
     fontSize: 40,
     textAlign: "center",
   },
-
   row: {
     flexDirection: "row",
   },
